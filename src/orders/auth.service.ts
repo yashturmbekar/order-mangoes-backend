@@ -7,8 +7,8 @@ export class AuthService {
   private users = [
     {
       id: 1,
-      username: "admin",
-      password: "$2b$10$wrzRTxDwW6ij4h/S1UwtUOQ/AzCqUTqZWk58jeH/0uhhDjN/1YkxK", // bcrypt hash for 'admin123'
+      username: "admin@gmail.com",
+      password: "$2b$10$81Hk2.t0VpOl87P.NyVFwOaJhJv9ueZGUBfO.plbIz0cmAt5cuNde", // bcrypt hash for 'admin@1312'
     },
   ];
 
