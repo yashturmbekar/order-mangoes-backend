@@ -12,11 +12,18 @@ import { JwtStrategy } from './jwt.strategy';
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'root',
-      database: 'mango_orders',
+      ...(process.env.DATABASE_URL
+        ? {
+            url: process.env.DATABASE_URL,
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+          }
+        : {
+            host: 'localhost',
+            port: 5432,
+            username: 'postgres',
+            password: 'root',
+            database: 'mango_orders',
+          }),
       entities: [Order],
       synchronize: true,
     }),
