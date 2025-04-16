@@ -41,4 +41,11 @@ export class OrderService {
   async activateOrder(id: number) {
     return this.orderRepo.update(id, { isActive: true });
   }
+
+  async getOrderDetailsByPhoneNumber(phone: string): Promise<Order[]> {
+    return this.orderRepo.find({
+      where: { phone, isActive: true },
+      order: { created_at: "DESC" },
+    });
+  }
 }

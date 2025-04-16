@@ -1,9 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, UseGuards } from '@nestjs/common';
-import { OrderService } from './order.service';
-import { Order } from './order.entity';
-import { JwtAuthGuard } from './jwt.guard';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  UseGuards,
+} from "@nestjs/common";
+import { OrderService } from "./order.service";
+import { Order } from "./order.entity";
+import { JwtAuthGuard } from "./jwt.guard";
 
-@Controller('admin/orders')
+@Controller("admin/orders")
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
@@ -19,22 +27,25 @@ export class OrderController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Patch(':id')
-  updateOrder(@Param('id') id: number, @Body() body: Partial<Order>) {
-  return this.orderService.updateOrder(id, body);
-}
+  @Patch(":id")
+  updateOrder(@Param("id") id: number, @Body() body: Partial<Order>) {
+    return this.orderService.updateOrder(id, body);
+  }
 
-@UseGuards(JwtAuthGuard)
-@Patch(':id/cancel')
-cancelOrder(@Param('id') id: number) {
-  return this.orderService.cancelOrder(id);
-}
+  @UseGuards(JwtAuthGuard)
+  @Patch(":id/cancel")
+  cancelOrder(@Param("id") id: number) {
+    return this.orderService.cancelOrder(id);
+  }
 
-@UseGuards(JwtAuthGuard)
-@Patch(':id/activate')
-activateOrder(@Param('id') id: number) {
-  return this.orderService.activateOrder(id);
-}
+  @UseGuards(JwtAuthGuard)
+  @Patch(":id/activate")
+  activateOrder(@Param("id") id: number) {
+    return this.orderService.activateOrder(id);
+  }
 
-  
+  @Get("details/:phone")
+  getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
+    return this.orderService.getOrderDetailsByPhoneNumber(phone);
+  }
 }
