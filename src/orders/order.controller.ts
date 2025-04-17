@@ -49,8 +49,6 @@ export class OrderController {
     return this.orderService.activateOrder(id);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Roles("customer")
   @Get("details/:phone")
   getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
     return this.orderService.getOrderDetailsByPhoneNumber(phone);
