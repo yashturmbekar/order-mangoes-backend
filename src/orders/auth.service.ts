@@ -7,6 +7,7 @@ export class AuthService {
   private users = [
     {
       id: 1,
+      role: "admin",
       username: "admin@gmail.com",
       password: "$2b$10$81Hk2.t0VpOl87P.NyVFwOaJhJv9ueZGUBfO.plbIz0cmAt5cuNde", // bcrypt hash for 'admin@1312'
     },
@@ -31,7 +32,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
-    const payload = { username: user.username, sub: user.id };
+    const payload = { username: user.username, sub: user.id, role: user.role };
     const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
 

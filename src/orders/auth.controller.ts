@@ -1,5 +1,7 @@
-import { Controller, Post, Body } from "@nestjs/common";
+import { Controller, Post, Body, SetMetadata } from "@nestjs/common";
 import { AuthService } from "./auth.service";
+
+export const Roles = (...roles: string[]) => SetMetadata("roles", roles);
 
 @Controller("auth")
 export class AuthController {
