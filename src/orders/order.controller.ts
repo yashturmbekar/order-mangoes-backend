@@ -53,4 +53,9 @@ export class OrderController {
   getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
     return this.orderService.getOrderDetailsByPhoneNumber(phone);
   }
+
+  @Get("statistics")
+  async getOrderStatistics() {
+    return this.orderService.getOrderStatistics();
+  }
 }

@@ -61,4 +61,25 @@ export class OrderService {
       order: { createdAt: "DESC" },
     });
   }
+
+  async getOrderStatistics(): Promise<{
+    totalMangoesDelivered: number;
+    totalOrdersReceived: number;
+  }> {
+    const totalMangoesDelivered = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status", { status: "delivered" })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+
+    const totalOrdersReceived = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status", { status: "delivered" })
+      .getCount();
+
+    return {
+      totalMangoesDelivered: totalMangoesDelivered?.total || 0,
+      totalOrdersReceived,
+    };
+  }
 }
