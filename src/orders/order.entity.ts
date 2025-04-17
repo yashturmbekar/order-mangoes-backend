@@ -1,12 +1,17 @@
-import { Entity, Column, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+  ManyToOne,
+} from "typeorm";
+import { Customer } from "./customer.entity";
 
 @Entity()
 export class Order {
-  @PrimaryGeneratedColumn()
-  id!: number;
-
-  @Column({ unique: true })
-  orderId!: string;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Column()
   name!: string;
@@ -20,17 +25,17 @@ export class Order {
   @Column()
   location!: string;
 
-  @Column({ default: 'New Order' })
+  @Column({ default: "New Order" })
   status!: string;
 
-  @Column({ default: 'pending' })
+  @Column({ default: "pending" })
   paymentStatus!: string;
 
-  @Column({ default: 'order_received' })
+  @Column({ default: "order_received" })
   orderStatus!: string;
 
-  @Column({ default: () => 'CURRENT_TIMESTAMP' })
-  created_at!: Date;
+  @CreateDateColumn()
+  createdAt!: Date;
 
   @UpdateDateColumn()
   lastUpdatedAt!: Date;
@@ -38,4 +43,9 @@ export class Order {
   @Column({ default: true })
   isActive!: boolean;
 
+  @ManyToOne(() => Customer, (customer) => customer.orders, {
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  customer!: Customer;
 }

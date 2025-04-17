@@ -31,24 +31,26 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Roles("admin")
   @Patch(":id")
-  updateOrder(@Param("id") id: number, @Body() body: Partial<Order>) {
+  updateOrder(@Param("id") id: string, @Body() body: Partial<Order>) {
     return this.orderService.updateOrder(id, body);
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles("admin")
   @Patch(":id/cancel")
-  cancelOrder(@Param("id") id: number) {
+  cancelOrder(@Param("id") id: string) {
     return this.orderService.cancelOrder(id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles("admin")
   @Patch(":id/activate")
-  activateOrder(@Param("id") id: number) {
+  activateOrder(@Param("id") id: string) {
     return this.orderService.activateOrder(id);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles("customer")
   @Get("details/:phone")
   getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
     return this.orderService.getOrderDetailsByPhoneNumber(phone);
