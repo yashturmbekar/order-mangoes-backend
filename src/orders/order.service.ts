@@ -147,6 +147,8 @@ export class OrderService {
       )
       .getCount();
 
+    const totalOrders = await this.orderRepo.count();
+
     return {
       totalDozensDelivered: totalDozensDelivered?.total || 0,
       totalDozensOutForDelivery: totalDozensOutForDelivery?.total || 0,
@@ -155,6 +157,87 @@ export class OrderService {
       totalPaymentsPending: totalPaymentsPending || 0,
       totalPaymentsCompleted: totalPaymentsCompleted || 0,
       totalDeliveredWithPendingPayment: totalDeliveredWithPendingPayment || 0,
+      totalOrders, // Added total orders count
+    };
+  }
+
+  async getGroupedDeliveryOrders() {
+    const isActive = true;
+
+    const deliveredOrders = await this.orderRepo.find({
+      where: {
+        orderStatus: DeliveryStatus.DELIVERED,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const outForDeliveryOrders = await this.orderRepo.find({
+      where: {
+        orderStatus: DeliveryStatus.OUT_FOR_DELIVERY,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const inProgressOrders = await this.orderRepo.find({
+      where: {
+        orderStatus: DeliveryStatus.IN_PROGRESS,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const orderReceivedOrders = await this.orderRepo.find({
+      where: {
+        orderStatus: DeliveryStatus.ORDER_RECEIVED,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const pendingDeliveryOrders = [
+      ...outForDeliveryOrders,
+      ...inProgressOrders,
+      ...orderReceivedOrders,
+    ];
+
+    const paymentsPendingOrders = await this.orderRepo.find({
+      where: {
+        paymentStatus: PaymentStatus.PENDING,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const paymentsCompletedOrders = await this.orderRepo.find({
+      where: {
+        paymentStatus: PaymentStatus.COMPLETED,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const deliveredWithPendingPaymentOrders = await this.orderRepo.find({
+      where: {
+        orderStatus: DeliveryStatus.DELIVERED,
+        paymentStatus: PaymentStatus.PENDING,
+        isActive,
+      },
+      order: { createdAt: "DESC" },
+    });
+
+    const allOrders = await this.orderRepo.find({
+      order: { createdAt: "DESC" },
+    });
+
+    return {
+      deliveredOrders,
+      pendingDeliveryOrders, // ✅ Combined list
+      paymentsPendingOrders,
+      paymentsCompletedOrders,
+      deliveredWithPendingPaymentOrders,
+      allOrders, // Added all orders
     };
   }
 }

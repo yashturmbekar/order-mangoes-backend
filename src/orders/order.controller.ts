@@ -65,4 +65,11 @@ export class OrderController {
   async getDeliveryStatistics() {
     return this.orderService.getDeliveryStatistics();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  @Get("grouped-delivery-orders")
+  async getGroupedDeliveryOrders() {
+    return this.orderService.getGroupedDeliveryOrders();
+  }
 }
