@@ -85,77 +85,76 @@ export class OrderService {
   async getDeliveryStatistics() {
     const totalDozensDelivered = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
-        status: DeliveryStatus.DELIVERED, 
-        isActive: true 
+      .where("order.orderStatus = :status AND order.isActive = :isActive", {
+        status: DeliveryStatus.DELIVERED,
+        isActive: true,
       })
       .select("SUM(order.quantity)", "total")
       .getRawOne();
-  
+
     const totalDozensOutForDelivery = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
-        status: DeliveryStatus.OUT_FOR_DELIVERY, 
-        isActive: true 
+      .where("order.orderStatus = :status AND order.isActive = :isActive", {
+        status: DeliveryStatus.OUT_FOR_DELIVERY,
+        isActive: true,
       })
       .select("SUM(order.quantity)", "total")
       .getRawOne();
-  
+
     const totalDozensInProgress = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
-        status: DeliveryStatus.IN_PROGRESS, 
-        isActive: true 
+      .where("order.orderStatus = :status AND order.isActive = :isActive", {
+        status: DeliveryStatus.IN_PROGRESS,
+        isActive: true,
       })
       .select("SUM(order.quantity)", "total")
       .getRawOne();
-  
+
     const totalDozensOrderReceived = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
-        status: DeliveryStatus.ORDER_RECEIVED, 
-        isActive: true 
+      .where("order.orderStatus = :status AND order.isActive = :isActive", {
+        status: DeliveryStatus.ORDER_RECEIVED,
+        isActive: true,
       })
       .select("SUM(order.quantity)", "total")
       .getRawOne();
-  
+
     const totalPaymentsPending = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.paymentStatus = :status AND order.isActive = :isActive", { 
-        status: PaymentStatus.PENDING, 
-        isActive: true 
+      .where("order.paymentStatus = :status AND order.isActive = :isActive", {
+        status: PaymentStatus.PENDING,
+        isActive: true,
       })
-      .select("SUM(order.quantity)", "total")
-      .getRawOne();
-  
+      .getCount();
+
     const totalPaymentsCompleted = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.paymentStatus = :status AND order.isActive = :isActive", { 
-        status: PaymentStatus.COMPLETED, 
-        isActive: true 
+      .where("order.paymentStatus = :status AND order.isActive = :isActive", {
+        status: PaymentStatus.COMPLETED,
+        isActive: true,
       })
-      .select("SUM(order.quantity)", "total")
-      .getRawOne();
-  
+      .getCount();
+
     const totalDeliveredWithPendingPayment = await this.orderRepo
       .createQueryBuilder("order")
-      .where("order.orderStatus = :orderStatus AND order.paymentStatus = :paymentStatus AND order.isActive = :isActive", { 
-        orderStatus: DeliveryStatus.DELIVERED, 
-        paymentStatus: PaymentStatus.PENDING,
-        isActive: true 
-      })
-      .select("SUM(order.quantity)", "total")
-      .getRawOne();
-  
+      .where(
+        "order.orderStatus = :orderStatus AND order.paymentStatus = :paymentStatus AND order.isActive = :isActive",
+        {
+          orderStatus: DeliveryStatus.DELIVERED,
+          paymentStatus: PaymentStatus.PENDING,
+          isActive: true,
+        }
+      )
+      .getCount();
+
     return {
       totalDozensDelivered: totalDozensDelivered?.total || 0,
       totalDozensOutForDelivery: totalDozensOutForDelivery?.total || 0,
       totalDozensInProgress: totalDozensInProgress?.total || 0,
       totalDozensOrderReceived: totalDozensOrderReceived?.total || 0,
-      totalPaymentsPending: totalPaymentsPending?.total || 0,
-      totalPaymentsCompleted: totalPaymentsCompleted?.total || 0,
-      totalDeliveredWithPendingPayment: totalDeliveredWithPendingPayment?.total || 0,
+      totalPaymentsPending: totalPaymentsPending || 0,
+      totalPaymentsCompleted: totalPaymentsCompleted || 0,
+      totalDeliveredWithPendingPayment: totalDeliveredWithPendingPayment || 0,
     };
-  }  
-  
+  }
 }
