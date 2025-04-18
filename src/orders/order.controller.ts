@@ -58,4 +58,11 @@ export class OrderController {
   async getOrderStatistics() {
     return this.orderService.getOrderStatistics();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles("admin")
+  @Get("delivery-statistics")
+  async getDeliveryStatistics() {
+    return this.orderService.getDeliveryStatistics();
+  }
 }

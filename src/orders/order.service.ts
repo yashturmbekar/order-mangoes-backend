@@ -1,10 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Order } from "./order.entity";
+import { Order, DeliveryStatus, PaymentStatus } from "./order.entity";
 import { sendWhatsAppMessage } from "./whatsapp.service";
 import { Customer } from "./customer.entity";
-import * as crypto from "crypto";
 
 @Injectable()
 export class OrderService {
@@ -82,4 +81,81 @@ export class OrderService {
       totalOrdersReceived,
     };
   }
+
+  async getDeliveryStatistics() {
+    const totalDozensDelivered = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
+        status: DeliveryStatus.DELIVERED, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalDozensOutForDelivery = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
+        status: DeliveryStatus.OUT_FOR_DELIVERY, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalDozensInProgress = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
+        status: DeliveryStatus.IN_PROGRESS, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalDozensOrderReceived = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :status AND order.isActive = :isActive", { 
+        status: DeliveryStatus.ORDER_RECEIVED, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalPaymentsPending = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.paymentStatus = :status AND order.isActive = :isActive", { 
+        status: PaymentStatus.PENDING, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalPaymentsCompleted = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.paymentStatus = :status AND order.isActive = :isActive", { 
+        status: PaymentStatus.COMPLETED, 
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    const totalDeliveredWithPendingPayment = await this.orderRepo
+      .createQueryBuilder("order")
+      .where("order.orderStatus = :orderStatus AND order.paymentStatus = :paymentStatus AND order.isActive = :isActive", { 
+        orderStatus: DeliveryStatus.DELIVERED, 
+        paymentStatus: PaymentStatus.PENDING,
+        isActive: true 
+      })
+      .select("SUM(order.quantity)", "total")
+      .getRawOne();
+  
+    return {
+      totalDozensDelivered: totalDozensDelivered?.total || 0,
+      totalDozensOutForDelivery: totalDozensOutForDelivery?.total || 0,
+      totalDozensInProgress: totalDozensInProgress?.total || 0,
+      totalDozensOrderReceived: totalDozensOrderReceived?.total || 0,
+      totalPaymentsPending: totalPaymentsPending?.total || 0,
+      totalPaymentsCompleted: totalPaymentsCompleted?.total || 0,
+      totalDeliveredWithPendingPayment: totalDeliveredWithPendingPayment?.total || 0,
+    };
+  }  
+  
 }
