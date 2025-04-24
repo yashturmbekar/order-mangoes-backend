@@ -11,10 +11,14 @@ import { OrderService } from "./order.service";
 import { Order } from "./order.entity";
 import { JwtAuthGuard } from "./jwt.guard";
 import { Roles } from "./auth.controller";
+import { AuthService } from "./auth.service";
 
 @Controller("admin/orders")
 export class OrderController {
-  constructor(private readonly orderService: OrderService) {}
+  constructor(
+    private readonly orderService: OrderService,
+    private readonly authService: AuthService
+  ) {}
 
   @Post()
   create(@Body() order: Partial<Order>) {
@@ -50,8 +54,14 @@ export class OrderController {
   }
 
   @Get("details/:phone")
-  getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
-    return this.orderService.getOrderDetailsByPhoneNumber(phone);
+  async getOrderDetailsByPhoneNumber(@Param("phone") phone: string) {
+    const tokens = await this.authService.loginWithPhoneNumber(phone);
+    const orderDetails = await this.orderService.getOrderDetailsByPhoneNumber(phone);
+
+    return {
+      orderDetails,
+      ...tokens,
+    };
   }
 
   @Get("statistics")

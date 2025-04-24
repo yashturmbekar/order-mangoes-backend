@@ -23,7 +23,7 @@ export class AuthController {
   }
 
   @Post("refresh")
-  refreshToken(@Body() body: { userId: number; refreshToken: string }) {
+  refreshToken(@Body() body: { userId: string; refreshToken: string }) {
     return this.authService.refreshToken(body.userId, body.refreshToken);
   }
 
